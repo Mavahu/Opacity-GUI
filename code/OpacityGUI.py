@@ -140,14 +140,15 @@ class UIWidget(Screen):
         # self.scroller.bind(minimum_height=self.scroller.setter('height'))
         start = time.time()
         self.account.getFolderData(self.current_path)
-        testdata = self.account._metaData
+        account_metadata = self.account._metaData
         self.scroller.clear_widgets()
-        for folder in testdata.folders:
+        for folder in account_metadata.folders:
             folderitem = FolderItem(name=folder.name, handle=folder.handle)
             self.scroller.add_widget(folderitem)
-        for file in testdata.files:
-            self.scroller.add_widget(FileItem(name=file.name, handle=file.versions[0].handle, timestamp=file.created,
-                                              created_date=dt.datetime.utcfromtimestamp(file.created/1000.0).strftime("%d/%m/%Y")))
+        for file in account_metadata.files:
+            self.scroller.add_widget(
+                FileItem(name=file.name, handle=file.versions[0].handle, timestamp=file.created,
+                         created_date=dt.datetime.utcfromtimestamp(file.created/1000.0).strftime("%d/%m/%Y")))
         self.reset_sorts()
         print("{}".format(time.time()-start))
         # print(self.current_path)
@@ -361,7 +362,6 @@ class UIWidget(Screen):
         elif self.move_button.text == "Drop":
             print("moving files")
             self.items_to_move["to"] = self.current_path
-            #self.account.move(self.current_path, self.items_to_move[0].handle,posixpath.join(self.current_path,"mvs"))
             self.move_button.text = "Move"
             for item in self.items_to_move["items"]:
                 self.account._queue.put({"action": "move",

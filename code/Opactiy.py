@@ -234,10 +234,10 @@ class Opacity:
         content = json.loads(response.content.decode())
         if content["status"] != 'File is uploaded':
             if content["status"] == 'chunks missing':
-                missingParts = content["missingIndexes"]
-                while len(missingParts) > 0 and retries > 0:
+                missing_parts = content["missingIndexes"]
+                while len(missing_parts) > 0 and retries > 0:
                     amount = content["endIndex"]
-                    for missingPart in missingParts:
+                    for missingPart in missing_parts:
                         print("Trying to re-upload part {} out of {}".format(missingPart, amount))
                         self.uploadPart(fd, metaData, handle, missingPart-1, endIndex)
                     with requests.Session() as s:
@@ -248,9 +248,9 @@ class Opacity:
                         break
                     else:
                         if retries == 0:
-                            print("Retried the upload for 3 times.\nStopping upload")
-                            break
-                        missingParts = content["missingIndexes"]
+                            print(f"Failed to upload the {fd['name']}\nReason: Too many retries")
+                            return
+                        missing_parts = content["missingIndexes"]
             else:
                 raise AssertionError("Unknown status of upload-status")
 
@@ -361,7 +361,7 @@ class Opacity:
                 response = s.post(self._baseUrl + "upload", files=payload)
 
         except Exception as e:
-            print("Failed upload of part {} out of {}\nError: {}".format(currentIndex + 1, lastIndex, e.args))
+            print(f"Failed upload of part {currentIndex + 1} out of {lastIndex}\nError: {e.args}")
         # don't handle the response here, since when check upload-status is handling broken uploads
         # print("-- %s seconds ---" % (time.time() - start_time))
 
@@ -430,10 +430,6 @@ class Opacity:
         folderMetaData = FolderMetaData.ToObject(metaData)
 
         return folderMetaData
-
-    '''
-        "/" -> equals to the masterFolder of the account
-    '''
 
     def getFolderData(self, folder):
         folderKey = Helper.getFolderHDKey(self._masterKey, folder)

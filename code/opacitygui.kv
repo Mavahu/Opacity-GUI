@@ -1,6 +1,7 @@
 #:kivy 1.11.1
 #:set blue_color [0.204, 0.765, 0.89, 1]
 #:set blue_color2 [0.408, 0.471, 0.573, 1]
+#:import Clock kivy.clock.Clock
 
 <UIWidget>:
     #logger: logger
@@ -172,7 +173,7 @@
         text: str(root.name)
         size_hint_x: None
         width: dp(250)
-        on_release: app.root.update_path(root.name)
+        on_release: Clock.schedule_once(lambda x: app.root.update_path(root.name), 0.25)
     MDLabel:
         id: handle
         text: str(root.handle)[0:32] + "..."

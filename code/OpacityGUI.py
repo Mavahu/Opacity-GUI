@@ -88,7 +88,7 @@ class UIWidget(Screen):
         Window.bind(on_dropfile=self._on_file_drop)
         self.ascending = False
         self.path_depth = 0
-        Clock.schedule_once(self.checkForHandle, 1)
+        Clock.schedule_once(self.checkForHandle, 0.25)
 
     def _on_file_drop(self, window, file_or_folder):
         self.account._queue.put({"action": "upload",
@@ -138,8 +138,10 @@ class UIWidget(Screen):
 
     def load_path_content(self, _=None):
         # self.scroller.bind(minimum_height=self.scroller.setter('height'))
-        start = time.time()
+        #start = time.time()
         self.account.getFolderData(self.current_path)
+        #print("{}".format(time.time()-start))
+        #start = time.time()
         account_metadata = self.account._metaData
         self.scroller.clear_widgets()
         for folder in account_metadata.folders:
@@ -150,7 +152,7 @@ class UIWidget(Screen):
                 FileItem(name=file.name, handle=file.versions[0].handle, timestamp=file.created,
                          created_date=dt.datetime.utcfromtimestamp(file.created/1000.0).strftime("%d/%m/%Y")))
         self.reset_sorts()
-        print("{}".format(time.time()-start))
+        #print("{}".format(time.time()-start))
         # print(self.current_path)
         # print("")
 
@@ -158,6 +160,11 @@ class UIWidget(Screen):
         self.current_path = posixpath.join(self.current_path, newpath)
         self.path_depth += 1
         copy_of_path_depth = self.path_depth
+        # Clock.schedule_once(lambda  dt: self.update_2123(newpath, copy_of_path_depth),0.25)
+        self.load_path_content()
+        self.path_visualizer.add_widget(PathButton(text=newpath, depth=copy_of_path_depth))
+
+    def update_2123(self, newpath, copy_of_path_depth):
         self.load_path_content()
         self.path_visualizer.add_widget(PathButton(text=newpath, depth=copy_of_path_depth))
 

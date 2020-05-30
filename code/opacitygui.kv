@@ -1,0 +1,353 @@
+#:kivy 1.11.1
+#:set blue_color [0.204, 0.765, 0.89, 1]
+#:set blue_color2 [0.408, 0.471, 0.573, 1]
+
+<UIWidget>:
+    #logger: logger
+    move_button: move_button
+    header: header
+    scroller: scroll_content
+    path_visualizer: opacity_path
+    GridLayout:
+        cols: 1
+        rows: 1
+        GridLayout:
+            cols: 2
+            rows: 1
+            spacing: 10
+            padding: 10
+            width: self.parent.width
+            height: self.parent.height
+            GridLayout:
+                cols: 1
+                rows: 4
+                BoxLayout:
+                    id: opacity_path
+                    #padding: 10
+                    size_hint_y: None
+                    height: 40
+                    PathButton:
+                        depth: 0
+                        text: "Opacity"
+                HeaderList:
+                    id: header
+                ScrollView:
+                    do_scroll_x: False
+                    do_scroll_y: True
+                    MDList:
+                        id: scroll_content
+                        padding: 10
+                        spacing: 2
+                        size_hint_y: None
+                        #height: 50
+            GridLayout:
+                cols: 1
+                rows: 6
+                width: 100
+                row_default_height: 40
+                row_force_default: True
+                size_hint_x: None
+                spacing: 10
+                Button:
+                    text: "Create Folder"
+                    on_release: root.show_create_folder()
+                Button:
+                    text: "Upload"
+                    on_release: root.show_upload()
+                Button:
+                    text: "Delete"
+                    on_release: root.multiple_delete()
+                Button:
+                    text: "Download"
+                    on_release: root.multiple_download()
+                Button:
+                    id: move_button
+                    text: "Move"
+                    on_release: root.move_files()
+                Button:
+                    text: "Reset handle"
+                    on_release: root.resethandle()
+        #TextInput:
+        #    id: logger
+        #    size_hint_y: None
+        #    height: 100
+
+<HeaderList>:
+    name_sort: name_sort
+    checkbox: checkbox
+    padding: (10)
+    spacing: "10dp"
+    size_hint_y: None
+    height: dp(40)
+    orientation: "horizontal"
+    MDCheckbox:
+        id: checkbox
+        on_state: app.root.change_all_checkboxes(*args)
+        size_hint: None, None
+        width: dp(32)
+        height: dp(32)
+    MDLabel:
+        size_hint: None, None
+        width: dp(40)
+    MDRectangleFlatIconButton:
+        id: name_sort
+        icon: ""
+        text: "Name"
+        halign: "center"
+        valign: "middle"
+        size_hint_y: None
+        height: dp(28)
+        width: dp(100)
+        on_release: app.root.sort_items()
+    MDLabel:
+        size_hint: None, None
+        width: dp(150)
+    MDLabel:
+        text: "File Handle"
+        halign: "center"
+        valign: "middle"
+    MDLabel:
+        text: "Created Date"
+        halign: "center"
+        valign: "middle"
+    MDLabel:
+        text: "Actions"
+        size_hint_x: 0.2
+
+<PopupHandle>:
+    title: "Please specify your handle to continue!"
+    id: pop
+    entered_handle : entered_handle
+    error_label: error_label
+    auto_dismiss: False
+    GridLayout:
+        cols:2
+        rows:2
+        TextInput:
+            password: True
+            id: entered_handle
+            multiline: False
+            focus: True
+            size_hint: (1, None)
+            hint_text: "Enter your handle here"
+        Button:
+            width: 100
+            size_hint: (None,None)
+            text: "Submit"
+            on_release: pop.dismiss()
+        Label:
+            pos: 0,0
+            id: error_label
+            text: ""
+            color: 1,0,0,1
+
+
+<FolderItem>:
+    spacing: "10dp"
+    size_hint_y: None
+    height: 50
+    handle: ""
+    name: ""
+    name_button: name
+    orientation: "horizontal"
+    checkbox: checkbox
+    MDCheckbox:
+        id: checkbox
+        size_hint: None, None
+        width: dp(32)
+        height: dp(32)
+    Image:
+        source: "images/folder-icon.png"
+        size_hint: None, None
+        height: dp(40)
+        width: dp(40)
+        #size: self.texture.size[0]*0.07, self.texture.size[1]*0.07
+        #size_hint_x: 0.05
+    MDRectangleFlatIconButton:
+        icon: ""
+        id: name
+        #color: blue_color2
+        #background_normal: ''
+        #background_color: [0,0,0,1]
+        text: str(root.name)
+        size_hint_x: None
+        width: dp(250)
+        on_release: app.root.update_path(root.name)
+    MDLabel:
+        id: handle
+        text: str(root.handle)[0:32] + "..."
+        #color: blue_color2
+        #size_hint_x: 0.25
+        halign: "center"
+    MDIconButton:
+        icon: "images/download-icon.png"
+        user_font_size: "24sp"
+        on_release: app.root.show_download_dialog(root.handle, root.name)
+    MDIconButton:
+        icon: "images/edit-icon.png"
+        user_font_size: "24sp"
+        on_release: app.root.show_rename_popup(root.handle, root.name)
+    MDIconButton:
+        icon: "images/delete-icon.png"
+        user_font_size: "24sp"
+        on_release: app.root.show_delete_popup(root.handle)
+
+
+<FileItem>:
+    #md_bg_color: app.theme_cls.primary_color
+    spacing: "10dp"
+    size_hint_y: None
+    height: 50
+    handle: ""
+    name: ""
+    created_date: ""
+    orientation: "horizontal"
+    checkbox: checkbox
+    MDCheckbox:
+        id: checkbox
+        size_hint: None, None
+        width: dp(32)
+        height: dp(32)
+    Image:
+        source: "images/file-icon.png"
+        size_hint: None, None
+        height: dp(40)
+        width: dp(40)
+    MDLabel:
+        text_size: self.size
+        halign: "left"
+        valign: "middle"
+        id: name
+        text: str(root.name)
+        size_hint_x: None
+        width: dp(250)
+    MDLabel:
+        id: handle
+        #text_size: self.size
+        halign: "center"
+        #valign: "middle"
+        text: str(root.handle)[0:32] + "..."
+    MDLabel: # created_date
+        halign: "center"
+        valign: "middle"
+        text: str(root.created_date)
+    MDIconButton:
+        icon: "images/download-icon.png"
+        user_font_size: "24sp"
+        on_release: app.root.show_download_dialog(root.handle, root.name)
+    MDIconButton:
+        icon: "images/share-icon.png"
+        user_font_size: "24sp"
+        on_release: app.root.copy_sharelink(root.handle)
+    MDIconButton:
+        icon: "images/edit-icon.png"
+        user_font_size: "24sp"
+        on_release: app.root.show_rename_popup(root.handle, root.name)
+    MDIconButton:
+        icon: "images/delete-icon.png"
+        user_font_size: "24sp"
+        on_release: app.root.show_delete_popup(root.handle)
+
+<ImageButton@ButtonBehavior+Image>:
+
+<PathButton>:
+    size_hint_x: None
+    width: self.texture_size[0] + 10
+    on_release: app.root.back_to_path(self.depth)
+
+<DownloadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserIconView:
+            id: filechooser
+            #dirselect: True
+            #on_selection: text_input.text = self.selection and self.selection[0] or ''
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+            Button:
+                text: "Download"
+                on_release: root.download(filechooser.path, root.handles)
+
+<UploadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        FileChooserIconView:
+            id: filechooser
+            dirselect: True
+            multiselect: True
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+            Button:
+                text: "Upload"
+                on_release: root.upload(filechooser.path, filechooser.selection)
+
+<NewFolderPopup>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        TextInput
+            size_hint_y: None
+            height: 30
+            multiline: False
+            id: folder_name
+            hint_text: "Please specify the folder name"
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+            Button:
+                text: "Save"
+                on_release: root.save(folder_name.text)
+
+
+<RenamePopup>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        TextInput
+            size_hint_y: None
+            height: 30
+            multiline: False
+            id: file_name
+            text: root.oldname
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+            Button:
+                text: "Save"
+                on_release: root.rename(file_name.text, root.oldname, root.handle)
+
+
+<DeletePopup>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: "vertical"
+        BoxLayout:
+            size_hint_y: None
+            height: 30
+            Button:
+                text: "Cancel"
+                on_release: root.cancel()
+            Button:
+                text: "Delete"
+                on_release: root.delete()

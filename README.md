@@ -23,16 +23,10 @@ $ git clone https://github.com/Mavahu/Opacity-GUI.git
 $ cd Opacity-GUI
 
 # Create a virtual environment
-$ python -m venv venv
-
-# Activate the virtual environment
-$ venv\Scripts\activate
-
-# Install the required libraries
-$ python -m pip install -r installationfiles\win-pip-requirements.txt
+$ installation.bat
 
 # Start the program
-$ python OpacityGUI.py
+$ start.bat
 ```
 
 ## Troubleshooting
@@ -56,14 +50,14 @@ sudo apt install python-dev libgmp3-dev
 
 ### Feature-List || To-do
 - [x] Basic browsing UI
-- [x] File/Foulder upload
+- [x] File/Folder upload
 - [x] File/Folder download
 - [x] File/Folder deletion
 - [x] File/Folder rename
 - [x] Folder creation
 - [x] Sharelink creation
 - [x] Handle saving/resetting
-- [ ] Add file/folder moving
+- [x] Add file/folder moving
 - [x] Implement file sorting
 - [ ] Implement account-handle check
 - [ ] Implement single file-handle download, if needed

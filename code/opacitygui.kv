@@ -35,13 +35,15 @@
                     id: header
                 RecycleView:
                     id: recycle_view
-                    size_hint: 1, 0.9
                     viewclass: "FileItem"
+                    scroll_type:["bars", "content"]
+                    scroll_wheel_distance: dp(114)
+                    bar_width: dp(15)
                     RecycleBoxLayout:
                         id: scroll_content
                         orientation: "vertical"
-                        padding: 10
-                        spacing: 2
+                        #padding: 10
+                        #spacing: 2
                         size_hint_y: None
                         default_size_hint: 1, None
                         height: self.minimum_height
@@ -108,16 +110,17 @@
         size_hint: None, None
         width: dp(150)
     MDLabel:
-        text: "File Handle"
-        halign: "center"
+        text: "Created"
+        halign: "left"
         valign: "middle"
     MDLabel:
-        text: "Created Date"
-        halign: "center"
+        text: "Size"
+        halign: "left"
         valign: "middle"
     MDLabel:
         text: "Actions"
-        size_hint_x: 0.2
+        halign: "left"
+        valign: "middle"
 
 <PopupHandle>:
     title: "Please specify your handle to continue!"
@@ -146,28 +149,28 @@
             text: ""
             color: 1,0,0,1
 
-
-<FolderItem>:
+<FileItem>:
     spacing: "10dp"
     size_hint_y: None
-    height: 50
+    height: 20
+    folder: False
     handle: ""
     name: ""
-    name_button: name
+    image_source: ""
+    created_date: ""
+    file_size: ""
     orientation: "horizontal"
-    checkbox: checkbox
+    checked: False
     MDCheckbox:
-        id: checkbox
+        active: root.checked
         size_hint: None, None
         width: dp(32)
         height: dp(32)
     Image:
-        source: "images/folder-icon.png"
+        source: root.image_source
         size_hint: None, None
         height: dp(40)
         width: dp(40)
-        #size: self.texture.size[0]*0.07, self.texture.size[1]*0.07
-        #size_hint_x: 0.05
     MDRectangleFlatIconButton:
         icon: ""
         id: name
@@ -177,89 +180,36 @@
         text: str(root.name)
         size_hint_x: None
         width: dp(250)
-        on_release: Clock.schedule_once(lambda x: app.root.update_path(root.name), 0.25)
-    MDLabel:
-        id: handle
-        text: str(root.handle)[0:32] + "..."
-        #color: blue_color2
-        #size_hint_x: 0.25
-        halign: "center"
-    TooltipMDIconButton:
-        icon: "images/download-icon.png"
-        tooltip_text: "Download"
-        user_font_size: "24sp"
-        on_release: app.root.show_download_dialog(root.handle, root.name)
-    TooltipMDIconButton:
-        icon: "images/edit-icon.png"
-        tooltip_text: "Rename"
-        user_font_size: "24sp"
-        on_release: app.root.show_rename_popup(root.handle, root.name)
-    TooltipMDIconButton:
-        icon: "images/delete-icon.png"
-        tooltip_text: "Delete"
-        user_font_size: "24sp"
-        on_release: app.root.show_delete_popup(root.handle)
-
-
-<FileItem>:
-    spacing: "10dp"
-    size_hint_y: None
-    height: 50
-    handle: ""
-    name: ""
-    created_date: ""
-    orientation: "horizontal"
-    checkbox: checkbox
-    MDCheckbox:
-        id: checkbox
-        size_hint: None, None
-        width: dp(32)
-        height: dp(32)
-    Image:
-        source: "images/file-icon.png"
-        size_hint: None, None
-        height: dp(40)
-        width: dp(40)
-    MDLabel:
-        text_size: self.size
-        halign: "left"
-        valign: "middle"
-        id: name
-        text: str(root.name)
-        size_hint_x: None
-        width: dp(250)
-    MDLabel:
-        id: handle
-        #text_size: self.size
-        halign: "center"
-        #valign: "middle"
-        text: str(root.handle)[0:32] + "..."
+        on_release: Clock.schedule_once(lambda x: app.root.update_path(root.name), 0.25) if root.folder else ""
     MDLabel: # created_date
         halign: "center"
-        valign: "middle"
+        #valign: "middle"
+        text_size: self.size
         text: str(root.created_date)
+    MDLabel: # siize
+        text_size: self.size
+        halign: "center"
+        #valign: "middle"
+        text: root.file_size
     TooltipMDIconButton:
         icon: "images/share-icon.png"
         tooltip_text: "Copy Sharelink"
-        user_font_size: "24sp"
         on_release: app.root.copy_sharelink(root.handle)
     TooltipMDIconButton:
         icon: "images/download-icon.png"
         tooltip_text: "Download"
-        user_font_size: "24sp"
         on_release: app.root.show_download_dialog(root.handle, root.name)
     TooltipMDIconButton:
         icon: "images/edit-icon.png"
         tooltip_text: "Rename"
-        user_font_size: "24sp"
         on_release: app.root.show_rename_popup(root.handle, root.name)
     TooltipMDIconButton:
         icon: "images/delete-icon.png"
         tooltip_text: "Delete"
-        user_font_size: "24sp"
         on_release: app.root.show_delete_popup(root.handle)
 
-<TooltipMDIconButton@MDIconButton+MDTooltip>
+<TooltipMDIconButton@MDIconButton+MDTooltip>:
+    user_font_size: "16sp"
 
 <PathButton>:
     size_hint_x: None

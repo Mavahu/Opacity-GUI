@@ -1,19 +1,24 @@
 from kivy.config import Config
 
-Config.set('graphics', 'width', '1524')
+Config.set('graphics', 'width', '920')
 Config.set('graphics', 'height', '720')
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.core.window import Window
+from kivy.uix.label import Label
 from kivy.uix.screenmanager import Screen
-from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty
+from kivy.properties import ObjectProperty, StringProperty, NumericProperty, ListProperty, BooleanProperty
 from kivy.clock import Clock
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.screen import MDScreen
+from kivymd.uix.label import MDLabel
+from kivy.uix.recycleboxlayout import RecycleBoxLayout
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
+
 
 import Opactiy
 import keyring
@@ -29,7 +34,7 @@ class FolderItem(MDBoxLayout):
     handle = StringProperty()
 
 
-class FileItem(BoxLayout):
+class FileItem(MDBoxLayout):
     name = StringProperty()
     handle = StringProperty()
     created_date = StringProperty()
@@ -73,7 +78,7 @@ class HeaderList(MDBoxLayout):
     pass
 
 
-class UIWidget(Screen):
+class UIWidget(MDScreen):
     recycle_view = ObjectProperty(None)
     scroller = ObjectProperty(None)
     path_visualizer = ObjectProperty(None)
@@ -85,9 +90,10 @@ class UIWidget(Screen):
     def __init__(self, **kwargs):
         super(UIWidget, self).__init__(**kwargs)
         Window.bind(on_dropfile=self._on_file_drop)
+        #Window.set_system_cursor("hand")
         self.ascending = False
         self.path_depth = 0
-        Clock.schedule_once(self.checkForHandle, 0.25)
+        Clock.schedule_once(self.checkForHandle, 0.05)
 
     def _on_file_drop(self, window, file_or_folder):
         self.account._queue.put({"action": "upload",
@@ -133,8 +139,8 @@ class UIWidget(Screen):
     def loadAccount(self):
         self.account = Opactiy.Opacity(self.handle)
         # self.account.output = self.output
-        Clock.schedule_once(lambda dt: self.load_path_content(), 0.1)
-        #self.load_path_content()
+        #Clock.schedule_once(lambda dt: self.load_path_content(), 0.1)
+        self.load_path_content()
 
     def load_path_content(self, _=None):
         # self.scroller.bind(minimum_height=self.scroller.setter('height'))
@@ -143,16 +149,39 @@ class UIWidget(Screen):
         print("{}".format(time.time()-start))
         start = time.time()
         account_metadata = self.account._metaData
-        #self.scroller.clear_widgets()
-        # for folder in account_metadata.folders:
-        #     folderitem = FolderItem(name=folder.name, handle=folder.handle)
-        #     self.scroller.add_widget(folderitem)
+        for _ in range(len(self.recycle_view.data)):
+            self.recycle_view.data.pop()
+        for folder in account_metadata.folders:
+            self.recycle_view.data.append({
+                "folder": True,
+                "checked": False,
+                "name": folder.name,
+                "handle": folder.handle,
+                "image_source": "images/folder-icon.png",
+                "created_date": "",
+                "file_size": ""
+            })
+
         for file in account_metadata.files:
+            size = file.versions[0].size
+            type = ""
+            if size >= 1000000000:
+                type = "GB"
+            elif size >= 1000000:
+                type = "MB"
+            else:
+                type = "KB"
+            while size >= 1000:
+                size = size / 1000
             self.recycle_view.data.append(
-                {"name": file.name,
+                {"folder": False,
+                 "checked": False,
+                 "name": file.name,
                  "handle": file.versions[0].handle,
+                 "image_source": "images/file-icon.png",
                  "timestamp": file.created,
-                 "created_date": dt.datetime.utcfromtimestamp(file.created/1000.0).strftime("%d/%m/%Y")
+                 "created_date": dt.datetime.utcfromtimestamp(file.created/1000.0).strftime("%d/%m/%Y"),
+                 "file_size": "{:.2f} {}".format(size, type)
                 }
             )
         self.reset_sorts()
@@ -343,11 +372,11 @@ class UIWidget(Screen):
 
     def change_all_checkboxes(self, *args):
         if args[1] == "down":  # checked
-            for item in self.scroller.children:
-                item.checkbox.active = True
+            for item in self.recycle_view.data:
+                item["checked"] = True
         elif args[1] == "normal":  # unchecked
-            for item in self.scroller.children:
-                item.checkbox.active = False
+            for item in self.recycle_view.data:
+                item["checked"] = False
         else:
             print("checkbox has a new value")
 

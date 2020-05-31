@@ -9,12 +9,14 @@ class FolderMetaFileVersion:
         self.modified = modified
         self.created = created
 
+
 class FolderMetaFile:
 
     def __init__(self):
         self.name = None
         self.tags = []
         self.versions = []  # List[FolderMetaFileVersion]
+
 
 class FolderMetaFolder:
 
@@ -101,7 +103,7 @@ class FolderMetaData:
             folderMetaData.files.append(folderMetaFile)
 
         for folder in data[2]:
-            folderMetaFolder = FolderMetaFolder(folder[0],folder[1])
+            folderMetaFolder = FolderMetaFolder(folder[0], folder[1])
             folderMetaData.folders.append(folderMetaFolder)
 
         return folderMetaData

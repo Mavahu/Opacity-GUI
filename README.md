@@ -8,9 +8,7 @@ The following picture shows the current state of the fairly simple User Interfac
 
 ## Prerequisites
 
-* Python 3
-* C++ Buildtools
-* OpenSSL development package
+* Python 3.7
 
 ## Installation
 

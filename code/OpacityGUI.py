@@ -12,6 +12,7 @@ from kivy.properties import ObjectProperty, StringProperty, NumericProperty, Lis
 from kivy.clock import Clock
 from kivymd.app import MDApp
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivy.uix.boxlayout import BoxLayout
 from kivymd.uix.screen import MDScreen
 
 import Opactiy
@@ -28,7 +29,7 @@ class FolderItem(MDBoxLayout):
     handle = StringProperty()
 
 
-class FileItem(MDBoxLayout):
+class FileItem(BoxLayout):
     name = StringProperty()
     handle = StringProperty()
     created_date = StringProperty()
@@ -72,7 +73,8 @@ class HeaderList(MDBoxLayout):
     pass
 
 
-class UIWidget(MDScreen):
+class UIWidget(Screen):
+    recycle_view = ObjectProperty(None)
     scroller = ObjectProperty(None)
     path_visualizer = ObjectProperty(None)
     handle = StringProperty(None)
@@ -131,25 +133,30 @@ class UIWidget(MDScreen):
     def loadAccount(self):
         self.account = Opactiy.Opacity(self.handle)
         # self.account.output = self.output
-        self.load_path_content()
+        Clock.schedule_once(lambda dt: self.load_path_content(), 0.1)
+        #self.load_path_content()
 
     def load_path_content(self, _=None):
         # self.scroller.bind(minimum_height=self.scroller.setter('height'))
-        #start = time.time()
+        start = time.time()
         self.account.getFolderData(self.current_path)
-        #print("{}".format(time.time()-start))
-        #start = time.time()
+        print("{}".format(time.time()-start))
+        start = time.time()
         account_metadata = self.account._metaData
-        self.scroller.clear_widgets()
-        for folder in account_metadata.folders:
-            folderitem = FolderItem(name=folder.name, handle=folder.handle)
-            self.scroller.add_widget(folderitem)
+        #self.scroller.clear_widgets()
+        # for folder in account_metadata.folders:
+        #     folderitem = FolderItem(name=folder.name, handle=folder.handle)
+        #     self.scroller.add_widget(folderitem)
         for file in account_metadata.files:
-            self.scroller.add_widget(
-                FileItem(name=file.name, handle=file.versions[0].handle, timestamp=file.created,
-                         created_date=dt.datetime.utcfromtimestamp(file.created/1000.0).strftime("%d/%m/%Y")))
+            self.recycle_view.data.append(
+                {"name": file.name,
+                 "handle": file.versions[0].handle,
+                 "timestamp": file.created,
+                 "created_date": dt.datetime.utcfromtimestamp(file.created/1000.0).strftime("%d/%m/%Y")
+                }
+            )
         self.reset_sorts()
-        #print("{}".format(time.time()-start))
+        print("{}".format(time.time()-start))
         # print(self.current_path)
         # print("")
 
@@ -158,10 +165,6 @@ class UIWidget(MDScreen):
         self.path_depth += 1
         copy_of_path_depth = self.path_depth
         # Clock.schedule_once(lambda  dt: self.update_2123(newpath, copy_of_path_depth),0.25)
-        self.load_path_content()
-        self.path_visualizer.add_widget(PathButton(text=newpath, depth=copy_of_path_depth))
-
-    def update_2123(self, newpath, copy_of_path_depth):
         self.load_path_content()
         self.path_visualizer.add_widget(PathButton(text=newpath, depth=copy_of_path_depth))
 

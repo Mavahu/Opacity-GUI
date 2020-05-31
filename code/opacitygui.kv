@@ -8,6 +8,7 @@
     move_button: move_button
     header: header
     scroller: scroll_content
+    recycle_view: recycle_view
     path_visualizer: opacity_path
     GridLayout:
         cols: 1
@@ -32,15 +33,18 @@
                         text: "Opacity"
                 HeaderList:
                     id: header
-                ScrollView:
-                    do_scroll_x: False
-                    do_scroll_y: True
-                    MDList:
+                RecycleView:
+                    id: recycle_view
+                    size_hint: 1, 0.9
+                    viewclass: "FileItem"
+                    RecycleBoxLayout:
                         id: scroll_content
+                        orientation: "vertical"
                         padding: 10
                         spacing: 2
                         size_hint_y: None
-                        #height: 50
+                        default_size_hint: 1, None
+                        height: self.minimum_height
             GridLayout:
                 cols: 1
                 rows: 6
@@ -198,7 +202,6 @@
 
 
 <FileItem>:
-    #md_bg_color: app.theme_cls.primary_color
     spacing: "10dp"
     size_hint_y: None
     height: 50

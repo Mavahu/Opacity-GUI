@@ -180,16 +180,19 @@
         #color: blue_color2
         #size_hint_x: 0.25
         halign: "center"
-    MDIconButton:
+    TooltipMDIconButton:
         icon: "images/download-icon.png"
+        tooltip_text: "Download"
         user_font_size: "24sp"
         on_release: app.root.show_download_dialog(root.handle, root.name)
-    MDIconButton:
+    TooltipMDIconButton:
         icon: "images/edit-icon.png"
+        tooltip_text: "Rename"
         user_font_size: "24sp"
         on_release: app.root.show_rename_popup(root.handle, root.name)
-    MDIconButton:
+    TooltipMDIconButton:
         icon: "images/delete-icon.png"
+        tooltip_text: "Delete"
         user_font_size: "24sp"
         on_release: app.root.show_delete_popup(root.handle)
 
@@ -232,24 +235,28 @@
         halign: "center"
         valign: "middle"
         text: str(root.created_date)
-    MDIconButton:
-        icon: "images/download-icon.png"
-        user_font_size: "24sp"
-        on_release: app.root.show_download_dialog(root.handle, root.name)
-    MDIconButton:
+    TooltipMDIconButton:
         icon: "images/share-icon.png"
+        tooltip_text: "Copy Sharelink"
         user_font_size: "24sp"
         on_release: app.root.copy_sharelink(root.handle)
-    MDIconButton:
+    TooltipMDIconButton:
+        icon: "images/download-icon.png"
+        tooltip_text: "Download"
+        user_font_size: "24sp"
+        on_release: app.root.show_download_dialog(root.handle, root.name)
+    TooltipMDIconButton:
         icon: "images/edit-icon.png"
+        tooltip_text: "Rename"
         user_font_size: "24sp"
         on_release: app.root.show_rename_popup(root.handle, root.name)
-    MDIconButton:
+    TooltipMDIconButton:
         icon: "images/delete-icon.png"
+        tooltip_text: "Delete"
         user_font_size: "24sp"
         on_release: app.root.show_delete_popup(root.handle)
 
-<ImageButton@ButtonBehavior+Image>:
+<TooltipMDIconButton@MDIconButton+MDTooltip>
 
 <PathButton>:
     size_hint_x: None

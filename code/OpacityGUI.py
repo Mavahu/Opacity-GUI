@@ -3,10 +3,7 @@ from kivy.config import Config
 Config.set('graphics', 'width', '1524')
 Config.set('graphics', 'height', '720')
 Config.set('input', 'mouse', 'mouse,multitouch_on_demand')
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.image import Image
-from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.button import Button
 from kivy.core.window import Window
@@ -75,7 +72,7 @@ class HeaderList(MDBoxLayout):
     pass
 
 
-class UIWidget(Screen):
+class UIWidget(MDScreen):
     scroller = ObjectProperty(None)
     path_visualizer = ObjectProperty(None)
     handle = StringProperty(None)

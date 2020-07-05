@@ -1,5 +1,7 @@
 # Opacity GUI Tool
 
+Please go to [opacity-electron](https://github.com/Mavahu/opacity-electron) for the new version of this application, since this project is no longer in development.
+
 This Opacity GUI program allows you to interact with your Opacity account.
 
 The following picture shows the current state of the fairly simple User Interface:
